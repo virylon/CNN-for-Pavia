@@ -1,5 +1,6 @@
-#使用卷积神经网络进行高光谱遥感数据分类，使用的数据源为[Pavia University高光谱数据](http://www.ehu.eus/ccwintco/index.php?title=Hyperspectral_Remote_Sensing_Scenes#Pavia_Centre_and_University)
-#文件结构如下
+使用卷积神经网络进行高光谱遥感数据分类，使用的数据源为[Pavia University高光谱数据](http://www.ehu.eus/ccwintco/index.php?title=Hyperspectral_Remote_Sensing_Scenes#Pavia_Centre_and_University)
+文件结构如下
+
     文件夹log--日志文件夹，存放TensorBorad日志、网络参数文件、混淆矩阵图
     文件夹Patch--存放数据处理的切片结果
     文件夹PaviaU--高光谱数据下载存放位置
