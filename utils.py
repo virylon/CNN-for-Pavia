@@ -108,8 +108,8 @@ def patch(X, patch_size, height_index, width_index):
     patch = X[:, height_slice, width_slice]  # patch包含所有波段
     for i in range(X.shape[0]):
         mean = np.mean(patch[i, :, :])
-        patch = patch-mean
-    return patch
+        patch = patch-mean # ??
+    return patch #  每次它返回的全部通道（200）个矩阵减去最后一个通道的均值。为什么不是每个通道矩阵减去每个通道均值？
 
 
 def validate(net, data_loader, set_name, classes_name):
