@@ -19,7 +19,7 @@ from net import Net  # 导入模型
 # 定义超参
 EPOCH = 5
 BATCH_SIZE = 24
-classes_name = [str(c) for c in range(16)]
+classes_name = [str(c) for c in range(9)]  # 分类地物数量
 
 # --------------------加载数据---------------------
 # Indian Pines .mat文件路径(每个文件都是一个单独的类)

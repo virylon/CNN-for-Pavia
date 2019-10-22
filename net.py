@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import numpy as np
+from utils import xZero
 # --------------------搭建网络--------------------------------
 
 
@@ -25,12 +26,12 @@ class Net(nn.Module):
         super(Net, self).__init__()
         # in_channels,out_channels,kernel_size,stride(default:1),padding(default:0)
         self.conv1 = torch.nn.Sequential(
-            SeparableConv2d(200, 16, 1, 1, 0),  # 1*1卷积核
+            SeparableConv2d(103, 16, 1, 1, 0),  # 1*1卷积核
             nn.ReLU(inplace=True),
             nn.GroupNorm(16, 16)
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(200, 256, 1, 1, 0),
+            nn.Conv2d(103, 256, 1, 1, 0),
             nn.GroupNorm(256, 256),
             nn.ReLU(inplace=True),
             nn.Dropout(0.4),
@@ -44,24 +45,9 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
             nn.GroupNorm(64, 64)
         )
-        self.conv3 = nn.Sequential(
-            nn.Conv2d(200, 256, 1, 1, 0),
-            nn.GroupNorm(256, 256),
-            nn.ReLU(inplace=True),
-            nn.Dropout(0.4),
-            SeparableConv2d(256, 256, 5, 1, 2),
-            nn.ReLU(inplace=True),
-            nn.Dropout(0.4),
-            SeparableConv2d(256, 128, 5, 1, 2),
-            nn.ReLU(inplace=True),
-            nn.Dropout(0.4),
-            SeparableConv2d(128, 64, 5, 1, 2),
-            nn.ReLU(inplace=True),
-            nn.GroupNorm(64, 64)
-        )
 
         self.classifier = nn.Sequential(
-            nn.Linear(144*17*17, 2048),
+            nn.Linear(80*17*17, 2048),
             nn.ReLU(inplace=True),
             nn.Dropout(0.5),
             nn.Linear(2048, 256),
@@ -72,13 +58,12 @@ class Net(nn.Module):
         )
 
     def forward(self, x):
-        x1 = self.conv1(x)
+        x0 = xZero(x)
+        x1 = self.conv1(x0)
         x2 = self.conv2(x)
-        x3 = self.conv3(x)
-        cat = torch.cat((x2, x1, x3), 1)
-        cat = cat.view(-1, self.numFeatures(cat))  # 特征映射一维展开
-        output = self.classifier(cat)
-
+        x12 = torch.cat((x1, x2), 1)
+        xCat = x12.view(-1, self.numFeatures(x12))  # 特征映射一维展开
+        output = self.classifier(xCat)
         return output
 
     def numFeatures(self, x):
