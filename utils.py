@@ -69,7 +69,7 @@ class DataSet(Dataset):
 
 # 标准化
 def standartize(X):
-    newX = np.reshape(X, (-1, X.shape[0]))
+    newX = np.reshape(X, (-1,1))
     scaler = preprocessing.StandardScaler().fit(newX)
     newX = scaler.transform(newX)
     newX = np.reshape(newX, (X.shape[0], X.shape[1], X.shape[2]))
@@ -100,7 +100,19 @@ def pad(X, margin):
     return newX
 
 
-# 生成patch
+def xZero(X):
+    X = X.cpu()
+    newX = np.zeros(
+        (X.shape[0], X.shape[1], X.shape[2], X.shape[3]))
+    newX[:, :, int((X.shape[2]+1)/2), int((X.shape[3]+1)/2)] = X[:,
+                                                                 :, int((X.shape[2]+1)/2), int((X.shape[3]+1)/2)]
+    newX = torch.from_numpy(newX).double()
+    if torch.cuda.is_available():
+        newX = newX.cuda()
+    return newX
+
+
+# 生成patch，并且中心化
 def patch(X, patch_size, height_index, width_index):
     # slice函数用来切片
     height_slice = slice(height_index, height_index + patch_size)
@@ -108,7 +120,7 @@ def patch(X, patch_size, height_index, width_index):
     patch = X[:, height_slice, width_slice]  # patch包含所有波段
     for i in range(X.shape[0]):
         mean = np.mean(patch[i, :, :])
-        patch = patch-mean
+        patch[i] = patch[i]-mean
     return patch
 
 
